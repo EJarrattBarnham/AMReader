@@ -574,6 +574,25 @@ a role in the Statistical Analysis and Graph Production stages.
     will exclude any data from conditions B, D and E.
   - Cannot be used at the same time as Condition_Include
 
+- Structure_Include
+
+  - Select certain structures from the data before statistical analysis
+    and graph production.
+  - The input is a list of codes referring to the structures to keep in
+    the dataset. E.g. Structure_Include = c(“A”, “V”) will proceed with
+    only the data concerning the abundance of arbuscules and vesicles.
+  - Cannot be used at the same time as Structure_Exclude
+
+- Structure_Exclude
+
+  - Remove certain structures from the data before statistical analysis
+    and graph production.
+  - The input is a list of codes referring to the structures to remove
+    from the dataset. E.g. Condition_Exclude = c(“EH”, “IH”, “S”) will
+    exclude the data concerning extraradical hyphae, intraradical hyphae
+    and spores.
+  - Cannot be used at the same time as Structure_Include
+
 - Facet_1, Facet_2 and Facet_3
 
   - Inform the function of which facets to take from the Conditions
