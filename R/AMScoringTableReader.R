@@ -69,6 +69,9 @@
 #' @param Graph_Stat_Display A string which may take a value from
 #' "Letters" or "Reference"
 #'
+#' @param Graph_Datapoints A logical: If TRUE, individual data points are
+#' added to the plot.
+#'
 #' @param Graph_Reference_Condition A string which may take a values from
 #' "Letters" or "Reference"
 #'
@@ -97,6 +100,8 @@
 #'
 #' @param Graph_Legend A logical: If FALSE, the graph legend will not be
 #' displayed
+#'
+#' @param Graph_Object A string which may take a value from "Bar" or "Box".
 #'
 #' @param Graph_Size_Right_Label A numeric value greater than 0. Multiplies
 #' the size of the "Structure" labels.
@@ -175,6 +180,7 @@ AMReader <- function(
     Stat_Output = FALSE,
     Stat_File = "Statistical Analysis {Experiment_Name}.xlsx",
     Graph_Type = "Facets",
+    Graph_Datapoints = TRUE,
     Graph_Sample_Sizes = NULL,
     Graph_Condition_Order = NULL,
     Graph_Facet_1_Order = NULL,
@@ -192,6 +198,7 @@ AMReader <- function(
     Graph_Background_Colour = "grey95",
     Graph_Hline_Colour = "grey30",
     Graph_Legend = TRUE,
+    Graph_Object = "Bar",
     Graph_Size_Right_Label = 1,
     Graph_Size_Top_Label = 1,
     Graph_Size_Y_Axis = 1,
@@ -564,6 +571,22 @@ AMReader <- function(
     stop("Graph_Type must be either 'Facets' (default) or 'Single'")
   }
 
+  # Set the Graph_Datapoints variable to either TRUE or FALSE
+  # Defaults to TRUE
+
+  if (missing(Graph_Datapoints)
+      | is.null(Graph_Datapoints)) {
+    Graph_Datapoints <- TRUE
+    print(paste("No Graph_Datapoints input, ",
+                "defaulting to Graph_Datapoints = TRUE",
+                sep = ""))
+  } else if ((Graph_Datapoints == TRUE)
+             | (Graph_Datapoints == FALSE)) {
+    Graph_Datapoints <- Graph_Datapoints
+  } else {
+    warning("Graph_Datapoints must be either TRUE of FALSE")
+  }
+
   # Set the Graph_Sample_Sizes variable to either TRUE or FALSE
   # Defaults to Graph_Sample_Sizes = FALSE
 
@@ -878,6 +901,22 @@ AMReader <- function(
     Graph_Legend <- Graph_Legend
   } else {
     stop("Graph_Legend must be either TRUE or FALSE")
+  }
+
+  # Set the Graph_Object variable
+  # Defaults to "Bar"
+  # Must be either "Bar" or "Box"
+
+  Graph_Object_options <- c("Bar", "Box")
+
+  if (missing(Graph_Object)
+      | is.null(Graph_Object)) {
+    Graph_Object <- "Bar"
+    print("No Graph_Object input, defaulting to Graph_Object = 'Bar'")
+  } else if (Graph_Object %in% Graph_Object_options) {
+    Graph_Object <- Graph_Object
+  } else {
+    stop("Graph_Object must be either 'Bar' or 'Box'")
   }
 
   # Set the Graph_Size_Right_Label variable, a multiplier.
@@ -2589,33 +2628,96 @@ AMReader <- function(
 
   if (Graph_Type == "Facets") {
 
-    Plot <- Plot +
-      stat_summary(mapping = aes(fill = Condition),
-                   fun = mean,
-                   geom = "bar",
-                   position = position_dodge(width = 0.9),
-                   colour = NA,
-                   linewidth = 0,
-                   alpha = 1) +
-      geom_point(shape = 19,
-                 size = Point_size,
-                 colour = "black")
+    # Choose between bar and box plots
+
+    if (Graph_Object == "Bar") {
+
+      Plot <- Plot +
+        stat_summary(mapping = aes(fill = Condition),
+                     fun = mean,
+                     geom = "bar",
+                     position = position_dodge(width = 0.9),
+                     colour = NA,
+                     linewidth = 0,
+                     alpha = 1)
+
+      # Choose to include datapoints
+
+      if (Graph_Datapoints == TRUE) {
+
+        Plot <- Plot +
+          geom_point(shape = 19,
+                     size = Point_size,
+                     colour = "black")
+
+      }
+
+    } else if (Graph_Object == "Box") {
+
+      Plot <- Plot +
+        geom_boxplot(mapping = aes(fill = Condition),
+                     position = position_dodge(width = 0.9),
+                     outlier.size = Point_size)
+
+      if (Graph_Datapoints == TRUE) {
+
+        Plot <- Plot +
+          geom_point(shape = 19,
+                     size = Point_size,
+                     colour = "black")
+
+      }
+
+    }
+
+    #
 
   } else if (Graph_Type == "Single") {
 
-    Plot <- Plot +
-      stat_summary(mapping = aes(fill = variable, group = variable),
-                   fun = mean,
-                   geom = "bar",
-                   position = position_dodge(width = 0.9),
-                   colour = NA,
-                   linewidth = 0,
-                   alpha = 1) +
-      geom_point(position=position_dodge(width=0.90),
-                 aes(Condition, value, group=variable),
-                 shape = 19,
-                 size = Point_size,
-                 colour = "black")
+    # Choose between bar and box plots
+
+    if (Graph_Object == "Bar") {
+
+      Plot <- Plot +
+        stat_summary(mapping = aes(fill = variable, group = variable),
+                     fun = mean,
+                     geom = "bar",
+                     position = position_dodge(width = 0.9),
+                     colour = NA,
+                     linewidth = 0,
+                     alpha = 1)
+
+      # Choose to include datapoints
+
+      if (Graph_Datapoints == TRUE) {
+
+        Plot <- Plot +
+          geom_point(position=position_dodge(width=0.90),
+                     aes(Condition, value, group=variable),
+                     shape = 19,
+                     size = Point_size,
+                     colour = "black")
+      }
+
+    } else if (Graph_Object == "Box") {
+
+      Plot <- Plot +
+        geom_boxplot(mapping = aes(group = interaction(variable, Condition), fill = variable),
+                     position = position_dodge(width = 0.9),
+                     outlier.size = Point_size)
+
+      if (Graph_Datapoints == TRUE) {
+
+        Plot <- Plot +
+          geom_point(position=position_dodge(width=0.90),
+                     aes(Condition, value, group=variable),
+                     shape = 19,
+                     size = Point_size,
+                     colour = "black")
+      }
+
+    }
+
   }
 
   # Create the Facet_Formula as defined by Facets_Include from user inputs
