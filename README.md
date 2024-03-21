@@ -777,6 +777,19 @@ on their use.
   - Options are Graph_Sample_Sizes = FALSE (default) or
     Graph_Sample_Sizes = TRUE.
 
+- Graph_Object
+
+  - The default graph is a bar plot (see examples). This can be changed
+    to a box plot.
+  - Options are Graph_Object = “Bar” (default) or Graph_Object = “Box”.
+
+- Graph_Datapoints
+
+  - The default option is to display individual data points on the
+    graph. This can be deactivated.
+  - Options are Graph_Datapoints = TRUE (default) or Graph_Object =
+    FALSE.    
+
 - Graph_Condition_Order
 
   - It is possible to change the order of the conditions displayed in
