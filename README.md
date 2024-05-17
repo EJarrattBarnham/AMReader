@@ -45,7 +45,14 @@ it, try updating the R version you are using to the latest version.
 
 ## Citation
 
-A paper is currently in development.
+Please cite the following article if you have used either AMScorer or 
+AMReader in your research. This article contains a description of these
+toools which is also complementary to the user manual below.
+
+Jarratt-Barnham, E., Oldroyd, G. E. D. & Choi, J. Efficiently recording 
+and processing data from arbuscular mycorrhizal colonization assays 
+using AMScorer and AMReader. Front. Plant Sci. 15, (2024). 
+https://doi.org/10.3389/fpls.2024.1405598
 
 ## In Development
 
