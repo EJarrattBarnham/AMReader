@@ -252,40 +252,47 @@ AMReader <- function(
     Experiment_Name <- Experiment_Name
   }
 
-  # Set the Path variable
+  # Set the Path and File_Name variable
   # Defaults to the current working directory
 
-  if (missing(Path)
-      | is.null(Path)) {
-    print("No path identified, defaulting to the current working directory")
-    Path <- getwd()
-  } else {
-    Path <- Path
-  }
+  # If calling the mock dataset
 
-  # Set the File_Name variable
-  # Defaults to "AMScorer {Experiment_Name}.xlsx"
-  # User can employ the file.choose() function with 'File_Name = CHOOSE'
+  if ((!missing(Path) && Path == "man/Data") ||
+      (!missing(File_Name) && File_Name == "AMScorer_Mock_Experiment.xlsx")) {
 
-  if (missing(File_Name)
-      | is.null(File_Name)) {
-    print(
-      paste0(
-        "No File_Name input, defaulting to ",
-        "'AMScorer {Experiment_Name}.xlsx'"))
-    File_Name <- paste("AMScorer ", Experiment_Name, ".xlsx",
-                       sep = "")
-  } else if (File_Name == "CHOOSE") {
+    print("Loading built-in sample dataset: AMScorer_Mock_Experiment.xlsx")
+
+    Chosen_Path <- system.file("extdata", "AMScorer_Mock_Experiment.xlsx", package = "AMReader")
+
+    # Fallback safety check in case package isn't installed/built yet
+
+    if (Chosen_Path == "") {
+      stop("Mock data file not found in package installation. Ensure 'inst/extdata/AMScorer_Mock_Experiment.xlsx' exists.")
+    }
+
+    # Allow user interactive choice of file path
+
+  } else if (!missing(File_Name) && File_Name == "CHOOSE") {
+
     Chosen_Path <- file.choose()
+
+    # 3. Standard file path construction
   } else {
-    File_Name <- File_Name
-  }
 
-  # If the user has not used the file.choose() function, define the...
-  # Chosen_Path by combining the Path and File_Name input
+    if (missing(Path) || is.null(Path)) {
+      print("No path identified, defaulting to the current working directory")
+      Path <- getwd()
+    }
 
-  if (File_Name != "CHOOSE") {
-    Chosen_Path <- paste(Path, File_Name, sep = "/")
+    if (missing(File_Name) || is.null(File_Name)) {
+      print(paste0("No File_Name input, defaulting to 'AMScorer ", Experiment_Name, ".xlsx'"))
+      File_Name <- paste0("AMScorer ", Experiment_Name, ".xlsx")
+    }
+
+    # If the user has not used the file.choose() function or Mock data, define the...
+    # Chosen_Path by combining the Path and File_Name input
+
+    Chosen_Path <- file.path(Path, File_Name)
   }
 
   # Save data to global environment for user
