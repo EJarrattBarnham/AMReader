@@ -47,8 +47,8 @@ from the file list then “Download”.
 To download AMReader:
 
 ```{r Installation_Guide, echo = TRUE, eval = FALSE}
-install.packages("devtools")
-devtools::install_github("EJarrattBarnham/AMReader")
+install.packages("pak")
+pak::pkg_install("EJarrattBarnham/AMReader")
 ```
 
 This requires the R library "devtools". If having difficulty installing it, 
