@@ -1713,9 +1713,15 @@ AMReader <- function(
   # and a warning issued to the user. The Graph_Stat_Test variable will...
   # also be overwritten.
 
-  if (length(unique(Filtered_Dataset$Stat_Test_Friendly)) <= 1) {
-    warning(paste0("Only a single statistical_group has been identified. ",
-                   "No stats will be computed"))
+  # Calculate sample sizes per statistical group
+    
+  Group_Sample_Sizes <- Filtered_Dataset %>%
+    group_by(Stat_Test_Friendly) %>%
+    summarise(n = n(), .groups = "drop")
+
+if (length(unique(Filtered_Dataset$Stat_Test_Friendly)) <= 1 || any(Group_Sample_Sizes$n <= 1)) {
+    warning(paste0("Statistical testing bypassed: Statistical analysis requires at least 2 conditions, ",
+                   "and each condition must have more than 1 replicate."))
     Graph_Stat_Test <- NULL
   } else {
 
